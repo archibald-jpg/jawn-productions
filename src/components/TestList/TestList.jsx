@@ -2,6 +2,7 @@ import { useState } from "react";
 import { INTEREST_OPTIONS, PROJECT_SIZE_OPTIONS } from "../../data/interests";
 import { saveSubmission } from "../../utils/storage";
 import { track } from "../../utils/analytics";
+import { GOOGLE_FORM } from "../../config/brand";
 import "./TestList.css";
 
 const initialForm = {
@@ -16,6 +17,7 @@ export default function TestList() {
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   function updateField(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -33,15 +35,39 @@ export default function TestList() {
     return nextErrors;
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     const nextErrors = validate();
     setErrors(nextErrors);
 
     if (Object.keys(nextErrors).length > 0) return;
 
+    setSubmitting(true);
+
+    // Always keep a local copy for the dev panel
     saveSubmission(form);
     track("join-test-list-submit");
+
+    // Send to Google Form (linked to a Google Sheet)
+    const body = new FormData();
+    body.append(GOOGLE_FORM.fields.name, form.name);
+    body.append(GOOGLE_FORM.fields.email, form.email);
+    body.append(GOOGLE_FORM.fields.interest, form.interest);
+    body.append(GOOGLE_FORM.fields.projectSize, form.projectSize);
+    body.append(GOOGLE_FORM.fields.description, form.description);
+
+    try {
+      await fetch(GOOGLE_FORM.action, {
+        method: "POST",
+        mode: "no-cors", // Google Forms blocks reading the response; this is expected
+        body,
+      });
+    } catch (error) {
+      // no-cors requests rarely throw, but log just in case
+      console.error("Google Form submission error:", error);
+    }
+
+    setSubmitting(false);
     setSubmitted(true);
   }
 
@@ -56,8 +82,7 @@ export default function TestList() {
           </h2>
           <p className="test-list-success-body">
             We'll be in touch when the service is ready. This is a
-            prototype — your submission was saved locally in your browser
-            only, and no payment has been taken.
+            prototype — no payment has been taken.
           </p>
         </div>
       </section>
@@ -166,13 +191,16 @@ export default function TestList() {
           />
         </div>
 
-        <button type="submit" className="btn btn-primary test-list-submit">
-          Join the Test List
+        <button
+          type="submit"
+          className="btn btn-primary test-list-submit"
+          disabled={submitting}
+        >
+          {submitting ? "Submitting..." : "Join the Test List"}
         </button>
 
         <p className="test-list-disclaimer">
-          This is a prototype. No payment is required and your details are
-          stored locally in your browser only.
+          This is a prototype. No payment is required.
         </p>
       </form>
     </section>
