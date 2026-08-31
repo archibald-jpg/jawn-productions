@@ -1,0 +1,40 @@
+.promotion {
+  padding-block: var(--space-2xl);
+}
+
+.promotion-card {
+  background: var(--color-ink);
+  color: var(--color-bg);
+  padding: var(--space-2xl);
+  border-radius: 2px;
+  max-width: 640px;
+}
+
+.promotion-label {
+  color: var(--color-accent);
+}
+
+.promotion-headline {
+  margin-top: var(--space-sm);
+  font-size: var(--fs-h1);
+  color: var(--color-bg);
+}
+
+.promotion-body {
+  margin-top: var(--space-md);
+  color: rgba(247, 245, 241, 0.75);
+  max-width: 42ch;
+}
+
+.promotion-card .btn-primary {
+  margin-top: var(--space-lg);
+  background: var(--color-bg);
+  color: var(--color-ink);
+  border-color: var(--color-bg);
+}
+
+.promotion-card .btn-primary:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-white);
+}

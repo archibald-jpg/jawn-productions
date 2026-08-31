@@ -1,0 +1,48 @@
+.dev-panel {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: min(420px, 100vw);
+  max-height: 70vh;
+  overflow-y: auto;
+  background: var(--color-ink);
+  color: var(--color-bg);
+  font-size: var(--fs-small);
+  z-index: 999;
+  padding: var(--space-md);
+  border-top-left-radius: 4px;
+}
+
+.dev-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  margin-bottom: var(--space-sm);
+}
+
+.dev-panel-section {
+  margin-top: var(--space-md);
+  padding-top: var(--space-sm);
+  border-top: 1px solid rgba(247, 245, 241, 0.2);
+}
+
+.dev-panel pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 0.7rem;
+  background: rgba(247, 245, 241, 0.05);
+  padding: var(--space-sm);
+  border-radius: 2px;
+}
+
+.dev-panel button {
+  margin-top: var(--space-xs);
+  background: none;
+  border: 1px solid rgba(247, 245, 241, 0.4);
+  color: var(--color-bg);
+  padding: 0.35rem 0.75rem;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: var(--fs-label);
+}
