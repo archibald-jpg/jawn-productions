@@ -2,7 +2,7 @@ import { useState } from "react";
 import { INTEREST_OPTIONS, PROJECT_SIZE_OPTIONS } from "../../data/interests";
 import { saveSubmission } from "../../utils/storage";
 import { track } from "../../utils/analytics";
-import { GOOGLE_FORM } from "../../config/brand";
+import { FORMSPREE_ENDPOINT } from "../../config/brand";
 import "./TestList.css";
 
 const initialForm = {
@@ -18,6 +18,7 @@ export default function TestList() {
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
 
   function updateField(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -43,32 +44,29 @@ export default function TestList() {
     if (Object.keys(nextErrors).length > 0) return;
 
     setSubmitting(true);
+    setSubmitError(false);
 
-    // Always keep a local copy for the dev panel
     saveSubmission(form);
     track("join-test-list-submit");
 
-    // Send to Google Form (linked to a Google Sheet)
-    const body = new FormData();
-    body.append(GOOGLE_FORM.fields.name, form.name);
-    body.append(GOOGLE_FORM.fields.email, form.email);
-    body.append(GOOGLE_FORM.fields.interest, form.interest);
-    body.append(GOOGLE_FORM.fields.projectSize, form.projectSize);
-    body.append(GOOGLE_FORM.fields.description, form.description);
-
     try {
-      await fetch(GOOGLE_FORM.action, {
+      const response = await fetch(FORMSPREE_ENDPOINT, {
         method: "POST",
-        mode: "no-cors", // Google Forms blocks reading the response; this is expected
-        body,
+        headers: { Accept: "application/json" },
+        body: new FormData(event.target),
       });
-    } catch (error) {
-      // no-cors requests rarely throw, but log just in case
-      console.error("Google Form submission error:", error);
-    }
 
-    setSubmitting(false);
-    setSubmitted(true);
+      if (response.ok) {
+        setSubmitted(true);
+      } else {
+        setSubmitError(true);
+      }
+    } catch (error) {
+      console.error("Form submission failed:", error);
+      setSubmitError(true);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   if (submitted) {
@@ -107,6 +105,7 @@ export default function TestList() {
           <label htmlFor="name">Name</label>
           <input
             id="name"
+            name="name"
             type="text"
             value={form.name}
             onChange={(e) => updateField("name", e.target.value)}
@@ -124,6 +123,7 @@ export default function TestList() {
           <label htmlFor="email">Email</label>
           <input
             id="email"
+            name="email"
             type="email"
             value={form.email}
             onChange={(e) => updateField("email", e.target.value)}
@@ -141,6 +141,7 @@ export default function TestList() {
           <label htmlFor="interest">What are you interested in?</label>
           <select
             id="interest"
+            name="interest"
             value={form.interest}
             onChange={(e) => updateField("interest", e.target.value)}
             aria-invalid={Boolean(errors.interest)}
@@ -166,6 +167,7 @@ export default function TestList() {
           </label>
           <select
             id="projectSize"
+            name="projectSize"
             value={form.projectSize}
             onChange={(e) => updateField("projectSize", e.target.value)}
           >
@@ -185,6 +187,7 @@ export default function TestList() {
           </label>
           <textarea
             id="description"
+            name="description"
             rows={4}
             value={form.description}
             onChange={(e) => updateField("description", e.target.value)}
@@ -198,6 +201,13 @@ export default function TestList() {
         >
           {submitting ? "Submitting..." : "Join the Test List"}
         </button>
+
+        {submitError && (
+          <p className="form-error">
+            Something went wrong sending your submission. Please try again,
+            or email us directly.
+          </p>
+        )}
 
         <p className="test-list-disclaimer">
           This is a prototype. No payment is required.

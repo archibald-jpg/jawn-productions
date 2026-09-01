@@ -19,14 +19,4 @@ export const PRIMARY_CTA = {
   label: "Join the Test List",
   href: "#test-list",
 };
-export const GOOGLE_FORM = {
-  action:
-    "https://docs.google.com/forms/u/0/d/e/1FAIpQLSfpHi-U7Ze1Ow8bwUMzg0McCjSHbvbj11BZzsIpMr-9k4ZCdg/formResponse",
-  fields: {
-    name: "entry.1203891324",
-    email: "entry.1547280304",
-    interest: "entry.20637017",
-    projectSize: "entry.1931402879",
-    description: "entry.1159378140",
-  },
-};
+export const FORMSPREE_ENDPOINT = "https://formspree.io/f/mrpgpylw";
