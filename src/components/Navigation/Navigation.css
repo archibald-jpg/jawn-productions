@@ -5,8 +5,7 @@
   height: var(--nav-height);
   display: flex;
   align-items: center;
-  background: rgba(247, 245, 241, 0.9);
-  backdrop-filter: blur(8px);
+  background: var(--color-bg);
   border-bottom: 1px solid var(--color-line);
 }
 
