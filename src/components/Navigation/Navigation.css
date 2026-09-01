@@ -73,7 +73,12 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity var(--duration) var(--ease),
-                transform var(--duration) var(--ease);
+                transform var(--duration) var(--ease),
+                background-color var(--duration) var(--ease);
+  }
+
+  .nav-links-open {
+    background: var(--color-white);
   }
 
   .nav-links-open {
